@@ -1,7 +1,7 @@
 export default function Main() {
     return (
         <>
-        ほげほ
+            ここで接続処理をする
         </>
     )
 }
