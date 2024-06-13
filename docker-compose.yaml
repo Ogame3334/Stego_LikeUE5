@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  stego_ue5_server:
+    image: node:18
+    command: /root/product/execute.sh
+    container_name: stego_ue5_server
+    volumes:
+      - .:/root/product
+    ports:
+    - "49163:3000"
