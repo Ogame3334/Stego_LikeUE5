@@ -1,18 +1,26 @@
 'use client'
-import Image from "next/image";
 import RoundedButton from "../components/RoundedButton";
-import { useEffect } from "react";
-import Router from "next/router";
+import { useState, useEffect } from "react";
 
 export default function Home() {
-  let color_v = 0;
-  // useEffect(()=>{})
-  if (typeof document !== 'undefined') {
-    setInterval(()=>{
-      document.body.style.setProperty('--color-v', String(color_v));
-      color_v += 1;
+  const [color_v, setColor_v] = useState(0);
+  
+  // if (typeof document !== 'undefined') {
+  //   setInterval(()=>{
+  //     document.body.style.setProperty('--color-v', String(color_v));
+  //     color_v += 1;
+  //   }, 100);
+  // }
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (typeof document !== 'undefined') {
+        document.body.style.setProperty('--color-v', String(color_v));
+        setColor_v((prev) => prev + 1);
+      }
     }, 100);
-  }
+
+    return () => clearInterval(intervalId); // Clean up the interval on component unmount
+  }, [color_v]);
 
   return (
     <main className="w-full h-full">
