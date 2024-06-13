@@ -18,12 +18,12 @@ export default function Home() {
     <main className="w-full h-full">
       <div className="top-container w-full h-full main-container">
           <div className="w-full h-full flex flex-col justify-center items-center">
-            <div className="text-9xl">
+            <div className="text-5xl md:text-8xl lg:text-9xl">
               PosaMagica
             </div>
             <RoundedButton
               href="/connection">
-                <div className="text-3xl p-3">
+                <div className="text-xl md:text-3xl p-3">
                   Connect
                 </div>
             </RoundedButton>
