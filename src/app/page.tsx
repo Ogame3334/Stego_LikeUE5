@@ -5,12 +5,6 @@ import { useState, useEffect } from "react";
 export default function Home() {
   const [color_v, setColor_v] = useState(0);
   
-  // if (typeof document !== 'undefined') {
-  //   setInterval(()=>{
-  //     document.body.style.setProperty('--color-v', String(color_v));
-  //     color_v += 1;
-  //   }, 100);
-  // }
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (typeof document !== 'undefined') {

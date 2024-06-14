@@ -16,7 +16,7 @@ main {
 }
 
 .main-container {
-  background: linear-gradient(-20deg, hsl(var(--color-v), 100%, 50%) 0%, hsl(calc(var(--color-v) + 90), 50%, 50%) 100%);
+  background: linear-gradient(-20deg, hsl(var(--color-v), 50%, 65%) 0%, hsl(calc(var(--color-v) + 90), 50%, 65%) 100%);
 }
 
 .float-button {
