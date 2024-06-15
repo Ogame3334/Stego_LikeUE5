@@ -78,8 +78,8 @@ const PoseNetComponent: React.FC = () => {
           right: 0,
           textAlign: 'center',
           zIndex: 7,
-          width: 640,
-          height: 480,
+        //   width: 640,
+        //   height: 480,
         //   display: 'none'
         }}
       />
@@ -93,8 +93,8 @@ const PoseNetComponent: React.FC = () => {
           right: 0,
           textAlign: 'center',
           zIndex: 8,
-          width: 640,
-          height: 480,
+        //   width: 640,
+        //   height: 480,
         }}
       />
     </div>
