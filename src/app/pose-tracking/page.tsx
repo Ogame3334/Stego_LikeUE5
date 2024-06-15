@@ -7,10 +7,22 @@ import RoundedButtonOnClick from "@/components/RoundedButtonOnClick";
 
 export default function Main() {
   const [pose, setPose] = useState<Pose>({ score: 0, keypoints: [] });
-  const [changeCamera, setChangeCamera] = useState<Function>(()=>{});
+  const [changeCamera, setChangeCamera] = useState({fn: ()=>{}});
+  const [color_v, setColor_v] = useState(0);
   // useEffect(() => {
   //   console.log(pose);
   // }, [pose]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (typeof document !== 'undefined') {
+        document.body.style.setProperty('--color-v', String(color_v));
+        setColor_v((prev) => prev + 1);
+      }
+    }, 100);
+
+    return () => clearInterval(intervalId); // Clean up the interval on component unmount
+  }, [color_v]);
 
   return (
     <main className="w-full h-full">
@@ -18,7 +30,7 @@ export default function Main() {
           <div className="p-10">
             <div className="p-5 text-center">
               <RoundedButtonOnClick
-                onClick={()=>{changeCamera()}}
+                onClick={()=>{changeCamera.fn()}}
                 >
                 Change Camera
               </RoundedButtonOnClick>
