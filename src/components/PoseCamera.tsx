@@ -77,9 +77,10 @@ const PoseNetComponent: React.FC = () => {
           left: 0,
           right: 0,
           textAlign: 'center',
-          zIndex: 9,
+          zIndex: 7,
           width: 640,
           height: 480,
+        //   display: 'none'
         }}
       />
       <canvas
