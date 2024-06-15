@@ -16,6 +16,7 @@ type ClientToServerEvents = {
 const Home = () => {
   const [color_v, setColor_v] = useState(0);
   const [sended, setSended] = useState(false);
+  const [isUncorrectedPin, setIsUncorrectedPin] = useState(false);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -47,6 +48,10 @@ const Home = () => {
         const data: CommunicationFormat = JSON.parse(msg);
         if (data.method === 'connection-applied') {
           window.location.href = `/pose-tracking?token=${data.content.token}`
+        }
+        else if(data.method === 'connection-invalid'){
+          setSended(false);
+          setIsUncorrectedPin(true);
         }
         console.log(msg);
         setResponse(msg);
@@ -93,11 +98,13 @@ const Home = () => {
             :
             <>
               <div className="text-3xl md:text-6xl lg:text-7xl">
-                Enter The Access Key
+                Enter The Access PIN
               </div>
+              <div className='m-20 text-center'>
+              {isUncorrectedPin ? <p>PIN is wrong.</p> : <></>}
               <input
                 type="text"
-                className='p-3 m-20 rounded-full text-center border border-black'
+                className='p-3  rounded-full text-center border border-black'
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => {
@@ -105,7 +112,8 @@ const Home = () => {
                     sendConnectRequest();
                   }
                 }}
-              />
+                />
+              </div>
             </>
           }
         </div>
