@@ -1,10 +1,21 @@
+'use client'
+
 import PoseNetComponent from "@/components/PoseCamera";
-import { PoseNet } from "@tensorflow-models/posenet";
+import { Pose } from "@tensorflow-models/posenet";
+import { useEffect, useState } from "react";
 
 export default function Main(){
+    const [pose, setPose] = useState<Pose>({score: 0, keypoints: []});
+    useEffect(()=>{
+        console.log(pose);
+    }, [pose]);
     return (
         <>
-            <PoseNetComponent />
+            <PoseNetComponent 
+                pose={pose}    
+                setPose={setPose}
+                setChangeCamera={()=>{}}
+            />
         </>
     )    
 }
