@@ -14,6 +14,7 @@ export default function Main(){
             <PoseNetComponent 
                 pose={pose}    
                 setPose={setPose}
+                setNowLoding={()=>{}}
             />
         </>
     )    

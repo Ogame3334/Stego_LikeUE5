@@ -1,56 +1,6 @@
-// 'use client'
-
-// import { useState, useEffect } from "react";
-// import PoseNetComponent from "@/components/PoseCamera";
-// import { Pose } from "@tensorflow-models/posenet";
-// import RoundedButtonOnClick from "@/components/RoundedButtonOnClick";
-
-// export default function Main() {
-//   const [pose, setPose] = useState<Pose>({ score: 0, keypoints: [] });
-//   const [color_v, setColor_v] = useState(0);
-//   // useEffect(() => {
-//   //   console.log(pose);
-//   // }, [pose]);
-
-//   useEffect(() => {
-//     const intervalId = setInterval(() => {
-//       if (typeof document !== 'undefined') {
-//         document.body.style.setProperty('--color-v', String(color_v));
-//         setColor_v((prev) => prev + 1);
-//       }
-//     }, 100);
-
-//     return () => clearInterval(intervalId); // Clean up the interval on component unmount
-//   }, [color_v]);
-
-//   return (
-//     <main className="w-full h-full">
-//       <div className="top-container w-full h-full main-container">
-//         <div className="flex">
-//             <PoseNetComponent
-//               pose={pose}
-//               setPose={setPose}
-//               />
-//           <div>
-//             <div className="h-32" />
-//             {pose.keypoints.map((elem, i) => {
-//               return (
-//                 <div>
-//                     {`${elem.part}: ${Math.round(elem.position.x * 10) / 10}, ${Math.round(elem.position.y * 10) / 10}`}
-//                 </div>
-//               )
-//             })}
-//           </div>
-
-//           </div>
-//       </div>
-//     </main>
-//   )
-// }
-
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, Suspense } from 'react';
 import { io, Socket } from 'socket.io-client';
 import CommunicationFormat from '@/interfaces/CommunicationFormat';
 import PoseNetComponent from '@/components/PoseCamera';
@@ -84,14 +34,14 @@ const Home = () => {
     return () => clearInterval(intervalId); // Clean up the interval on component unmount
   }, [color_v]);
 
-  useEffect(()=>{
+  useEffect(() => {
     const now = Date.now();
-    if(now - lastSendPoseTime.current < 500){
+    if (now - lastSendPoseTime.current < 500) {
       return;
     }
     sendPose();
     lastSendPoseTime.current = now;
-  }, [pose])
+  }, [pose]);
 
   const [socket, setSocket] = useState<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
   const [message, setMessage] = useState('');
@@ -106,13 +56,12 @@ const Home = () => {
         content: {
           token: token
         }
-      } as CommunicationFormat))
+      } as CommunicationFormat));
     }
-  }, [isLoading])
+  }, [isLoading, socket, token]);
 
   const sendPose = () => {
-    if(socket){
-      console.log("pose送信");
+    if (socket) {
       socket.send(JSON.stringify({
         from: 'camera',
         method: 'pose-send',
@@ -120,12 +69,11 @@ const Home = () => {
           token: token,
           pose: pose
         }
-      } as CommunicationFormat))
-    }
-    else{
+      } as CommunicationFormat));
+    } else {
       console.log(`socketがないよ: ${socket}`);
     }
-  }
+  };
 
   useEffect(() => {
     // APIルートを呼び出してSocket.IOサーバーを初期化
@@ -173,13 +121,11 @@ const Home = () => {
           />
           <div>
             <div className="h-32" />
-            {pose.keypoints.map((elem, i) => {
-              return (
-                <div key={i}>
-                  {`${elem.part}: ${Math.round(elem.position.x * 10) / 10}, ${Math.round(elem.position.y * 10) / 10}`}
-                </div>
-              )
-            })}
+            {pose.keypoints.map((elem, i) => (
+              <div key={i}>
+                {`${elem.part}: ${Math.round(elem.position.x * 10) / 10}, ${Math.round(elem.position.y * 10) / 10}`}
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -187,4 +133,10 @@ const Home = () => {
   );
 };
 
-export default Home;
+const HomePage = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <Home />
+  </Suspense>
+);
+
+export default HomePage;
