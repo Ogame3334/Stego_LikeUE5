@@ -1,14 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
 import * as posenet from '@tensorflow-models/posenet';
 import '@tensorflow/tfjs';
 import Webcam from 'react-webcam';
-import Image from 'next/image';
+import RoundedButtonOnClick from './RoundedButtonOnClick';
 
 interface PoseNetComponentProp {
   pose: posenet.Pose;
   setPose: Function;
-  setChangeCamera: Function
 }
 
 const PoseNetComponent: React.FC<PoseNetComponentProp> = (props: PoseNetComponentProp) => {
@@ -16,23 +14,7 @@ const PoseNetComponent: React.FC<PoseNetComponentProp> = (props: PoseNetComponen
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [loading, setLoading] = useState(true);
   const [cameraList, setCameraList] = useState<MediaDeviceInfo[]>([]);
-  const [selectedCamera, setSelectedCamera] = useState<string>('');
-
-
-  const toggleCamera = async () => {
-    console.log(selectedCamera);
-    console.log(cameraList.length);
-    const index = cameraList.map((elem) => (elem.deviceId)).indexOf(selectedCamera);
-    console.log(index);
-
-    // const newDeviceId = cameraList[index + 1].deviceId;
-    
-    // const stream = await navigator.mediaDevices.getUserMedia({
-    //   video: { deviceId: { exact: newDeviceId } },
-    // });
-    // webcamRef.current.video.srcObject = stream;
-    // setSelectedCamera(newDeviceId);
-  }
+  const [selectedCameraIndex, setSelectedCameraIndex] = useState<number>(0); // カメラのインデックスを管理
 
   useEffect(() => {
     const loadPosenet = async () => {
@@ -68,21 +50,22 @@ const PoseNetComponent: React.FC<PoseNetComponentProp> = (props: PoseNetComponen
       const cameras = devices.filter((device) => device.kind === 'videoinput');
       setCameraList(cameras);
       if (cameras.length > 0) {
-        setSelectedCamera(cameras[0].deviceId);
+        setSelectedCameraIndex(0); // 最初のカメラを選択状態にする
       }
     };
 
     loadPosenet();
     getCameras();
-    // props.setChangeCamera(()=>{console.log("fuga")})
   }, []);
 
-  const switchCamera = async (deviceId: string) => {
+  const switchCamera = async () => {
+    const nextCameraIndex = (selectedCameraIndex + 1) % cameraList.length;
+    setSelectedCameraIndex(nextCameraIndex);
+
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId: { exact: deviceId } },
+      video: { deviceId: { exact: cameraList[nextCameraIndex].deviceId } },
     });
     webcamRef.current.video.srcObject = stream;
-    setSelectedCamera(deviceId);
   };
 
   const drawCanvas = (
@@ -110,54 +93,38 @@ const PoseNetComponent: React.FC<PoseNetComponentProp> = (props: PoseNetComponen
   };
 
   return (
-    <div>
-      {loading && <p>Loading PoseNet model...</p>}
-      {/* <div>
-        <select
-          value={selectedCamera}
-          onChange={(e) => switchCamera(e.target.value)}
+    <div className="p-10">
+      <div className="p-5 text-center">
+        <RoundedButtonOnClick
+          onClick={() => { switchCamera() }}
         >
-          {cameraList.map((camera) => (
-            <option key={camera.deviceId} value={camera.deviceId}>
-              {camera.label || `Camera ${camera.deviceId}`}
-            </option>
-          ))}
-        </select>
-      </div> */}
-      <Webcam
-        ref={webcamRef}
-        // mirrored={true}
-        style={{
-          // visibility: 'hidden',
-          width: 0,
-          height: 0,
-        }}
-      />
-      {/* <div>
-        <button 
-          className='absolute z-10'
-          onClick={}
-        >
-          <Image 
-            src="/toggle.png"
-            width={50}
-            height={50}
-            alt="toggle"
-            className='m-3'
+          Change Camera
+        </RoundedButtonOnClick>
+      </div>
+      <div className="p-1 bg-white rounded-3xl border border-black">
+        <div>
+          {loading && <p>Loading PoseNet model...</p>}
+          <Webcam
+            ref={webcamRef}
+            style={{
+              visibility: 'hidden',
+              width: 0,
+              height: 0,
+            }}
           />
-        </button>
-      </div> */}
-      <canvas
-        ref={canvasRef}
-        style={{
-          zIndex: 8,
-          width: '100%',
-          height: '100%',
-          borderRadius: 24,
-          transform: 'scaleX(-1)'
-        }}
-      />
+          <canvas
+            ref={canvasRef}
+            style={{
+              zIndex: 8,
+              width: '100%',
+              height: '100%',
+              borderRadius: 24,
+            }}
+          />
+        </div>
+      </div>
     </div>
+
   );
 };
 
