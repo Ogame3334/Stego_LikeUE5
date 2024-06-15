@@ -6,6 +6,8 @@ import CommunicationFormat from '@/interfaces/CommunicationFormat';
 import PoseNetComponent from '@/components/PoseCamera';
 import { Pose } from '@tensorflow-models/posenet';
 import { useSearchParams } from 'next/navigation';
+import Image from 'next/image';
+import RoundedButton from '@/components/RoundedButton';
 
 type ServerToClientEvents = {
   message: (msg: string) => void;
@@ -16,7 +18,9 @@ type ClientToServerEvents = {
 };
 
 const Home = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [disconnected, setDisconnected] = useState(false);
+  const [connectionInvaild, setConnectionInvalid] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [color_v, setColor_v] = useState(0);
   const [pose, setPose] = useState<Pose>({ score: 0, keypoints: [] });
   const searchParams = useSearchParams();
@@ -91,6 +95,15 @@ const Home = () => {
       // メッセージを受信したときの処理
       socketIo.on('message', (msg) => {
         const data: CommunicationFormat = JSON.parse(msg);
+        if (data.method === 'connection-completed') {
+          setIsLoading(false);
+        }
+        else if (data.method === 'connection-invalid') {
+          setConnectionInvalid(true);
+        }
+        else if (data.method === 'disconnected') {
+          setDisconnected(true);
+        }
         console.log(msg);
         setResponse(msg);
       });
@@ -113,21 +126,67 @@ const Home = () => {
   return (
     <main className="w-full h-full">
       <div className="top-container w-full h-full main-container">
-        <div className="flex">
-          <PoseNetComponent
-            pose={pose}
-            setPose={setPose}
-            setNowLoding={(setIsLoading)}
-          />
-          <div>
-            <div className="h-32" />
-            {pose.keypoints.map((elem, i) => (
-              <div key={i}>
-                {`${elem.part}: ${Math.round(elem.position.x * 10) / 10}, ${Math.round(elem.position.y * 10) / 10}`}
+        {disconnected ?
+          <>
+            <div className="w-full h-full flex flex-col justify-center items-center">
+              <div className="text-5xl md:text-8xl lg:text-9xl">
+                Disconnected
               </div>
-            ))}
-          </div>
-        </div>
+              <RoundedButton
+                href="/">
+                <div className="text-xl md:text-3xl p-3">
+                  Return Top
+                </div>
+              </RoundedButton>
+            </div>
+          </>
+          :
+
+          connectionInvaild ?
+            <>
+              <div className="w-full h-full flex flex-col justify-center items-center">
+                <div className="text-5xl md:text-8xl lg:text-9xl">
+                  Connection Invalid
+                </div>
+                <RoundedButton
+                  href="/">
+                  <div className="text-xl md:text-3xl p-3">
+                    Return Top
+                  </div>
+                </RoundedButton>
+              </div>
+            </>
+            :
+            <>
+              {isLoading ?
+                <div className="w-full h-full flex flex-col justify-center items-center">
+                  <Image
+                    src='/loading.svg'
+                    width={300}
+                    height={300}
+                    alt='loading...'
+                  />
+                </div>
+                : <></>}
+              <div className={`${isLoading ? 'invisible' : ''}`}>
+                <div className="flex">
+                  <PoseNetComponent
+                    pose={pose}
+                    setPose={setPose}
+                    setNowLoding={(setIsLoading)}
+                  />
+                  <div>
+                    <div className="h-32" />
+                    {pose.keypoints.map((elem, i) => (
+                      <div key={i}>
+                        {`${elem.part}: ${Math.round(elem.position.x * 10) / 10}, ${Math.round(elem.position.y * 10) / 10}`}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+        }
       </div>
     </main>
   );

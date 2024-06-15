@@ -164,6 +164,23 @@ export default (req: NextApiRequest, res: NextApiResponseWithSocket) => {
       });
       socket.on('disconnect', () => {
         console.log('user disconnected');
+        clients = clients.filter((value: ClientPair) => {
+          if(value.game_client === socket || value.camera_client === socket){
+            value.game_client.send(JSON.stringify({
+              from: 'server',
+              method: 'disconnected',
+              content: {}
+            } as CommunicationFormat))
+            value.camera_client?.send(JSON.stringify({
+              from: 'server',
+              method: 'disconnected',
+              content: {}
+            } as CommunicationFormat))
+          }
+          else{
+            return value;
+          }
+        });
       });
     });
 

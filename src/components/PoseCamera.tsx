@@ -18,7 +18,8 @@ const PoseNetComponent: React.FC<PoseNetComponentProp> = (props: PoseNetComponen
   const [selectedCameraIndex, setSelectedCameraIndex] = useState<number>(0); // カメラのインデックスを管理
 
   useEffect(()=>{
-    props.setNowLoding(loading)
+    props.setNowLoding(loading);
+    console.log('loading', loading);
   }, [loading])
 
   useEffect(() => {

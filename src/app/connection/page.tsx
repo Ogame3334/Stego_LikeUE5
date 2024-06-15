@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import CommunicationFormat from '@/interfaces/CommunicationFormat';
+import Image from 'next/image';
 
 type ServerToClientEvents = {
   message: (msg: string) => void;
@@ -14,7 +15,8 @@ type ClientToServerEvents = {
 
 const Home = () => {
   const [color_v, setColor_v] = useState(0);
-  
+  const [sended, setSended] = useState(false);
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (typeof document !== 'undefined') {
@@ -26,7 +28,7 @@ const Home = () => {
     return () => clearInterval(intervalId); // Clean up the interval on component unmount
   }, [color_v]);
 
-  
+
   const [socket, setSocket] = useState<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('{}');
@@ -43,7 +45,7 @@ const Home = () => {
 
       socketIo.on('message', (msg) => {
         const data: CommunicationFormat = JSON.parse(msg);
-        if(data.method === 'connection-applied'){
+        if (data.method === 'connection-applied') {
           window.location.href = `/pose-tracking?token=${data.content.token}`
         }
         console.log(msg);
@@ -63,8 +65,8 @@ const Home = () => {
   }, []);
 
   const sendConnectRequest = () => {
-    if(socket){
-      console.log('sended!!')
+    if (socket) {
+      setSended(true);
       socket.send(JSON.stringify({
         from: 'connection-page',
         method: 'enter-pin',
@@ -77,25 +79,38 @@ const Home = () => {
 
   return (
     <main className="w-full h-full">
-       <div className="top-container w-full h-full main-container">
-           <div className="w-full h-full flex flex-col justify-center items-center">
-             <div className="text-3xl md:text-6xl lg:text-7xl">
+      <div className="top-container w-full h-full main-container">
+        <div className="w-full h-full flex flex-col justify-center items-center">
+          {sended ?
+            <>
+              <Image
+                src='/loading.svg'
+                width={300}
+                height={300}
+                alt='loading...'
+              />
+            </>
+            :
+            <>
+              <div className="text-3xl md:text-6xl lg:text-7xl">
                 Enter The Access Key
-             </div>
-             <input
-              type="text"
-              className='p-3 m-20 rounded-full text-center border border-black'
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e)=>{
-                if(e.key === 'Enter'){
-                  sendConnectRequest();
-                }
-              }}
-            />
-           </div>
-         </div>
-     </main>
+              </div>
+              <input
+                type="text"
+                className='p-3 m-20 rounded-full text-center border border-black'
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    sendConnectRequest();
+                  }
+                }}
+              />
+            </>
+          }
+        </div>
+      </div>
+    </main>
   );
 };
 

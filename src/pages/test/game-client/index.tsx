@@ -14,6 +14,7 @@ type ClientToServerEvents = {
 };
 
 const Home = () => {
+  const [disconnected, setDisconnected] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [pose, setPose] = useState<Pose>({ score: 0, keypoints: [] });
   const [socket, setSocket] = useState<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
@@ -44,11 +45,14 @@ const Home = () => {
         console.log(msg);
         setResponse(msg);
         const data: CommunicationFormat = JSON.parse(msg);
-        if(data.method === 'connection-completed'){
+        if (data.method === 'connection-completed') {
           setIsConnected(true);
         }
-        else if(data.method === 'pose-send'){
+        else if (data.method === 'pose-send') {
           setPose(data.content.pose as Pose);
+        }
+        else if (data.method === 'disconnected') {
+          setDisconnected(true);
         }
       });
 
@@ -75,7 +79,7 @@ const Home = () => {
   };
 
   const sendConnectRequest = () => {
-    if(socket){
+    if (socket) {
       socket.send(JSON.stringify({
         pin: message
       }))
@@ -84,23 +88,28 @@ const Home = () => {
 
   return (
     <div>
-      {isConnected ?
+      {disconnected ?
         <>
-          <div>
-            <div className="h-32" />
-            {pose.keypoints.map((elem, i) => {
-              return (
-                <div key={i}>
-                  {`${elem.part}: ${Math.round(elem.position.x * 10) / 10}, ${Math.round(elem.position.y * 10) / 10}`}
-                </div>
-              )
-            })}
-          </div>
+          <p>disconnected</p>
         </>
         :
-        <>
-          <p>pin: {JSON.parse(response).content?.pin}</p>
-        </>
+        isConnected ?
+          <>
+            <div>
+              <div className="h-32" />
+              {pose.keypoints.map((elem, i) => {
+                return (
+                  <div key={i}>
+                    {`${elem.part}: ${Math.round(elem.position.x * 10) / 10}, ${Math.round(elem.position.y * 10) / 10}`}
+                  </div>
+                )
+              })}
+            </div>
+          </>
+          :
+          <>
+            <p>pin: {JSON.parse(response).content?.pin}</p>
+          </>
       }
     </div>
   );
