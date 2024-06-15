@@ -7,6 +7,7 @@ import RoundedButtonOnClick from './RoundedButtonOnClick';
 interface PoseNetComponentProp {
   pose: posenet.Pose;
   setPose: Function;
+  setNowLoding: Function;
 }
 
 const PoseNetComponent: React.FC<PoseNetComponentProp> = (props: PoseNetComponentProp) => {
@@ -15,6 +16,10 @@ const PoseNetComponent: React.FC<PoseNetComponentProp> = (props: PoseNetComponen
   const [loading, setLoading] = useState(true);
   const [cameraList, setCameraList] = useState<MediaDeviceInfo[]>([]);
   const [selectedCameraIndex, setSelectedCameraIndex] = useState<number>(0); // カメラのインデックスを管理
+
+  useEffect(()=>{
+    props.setNowLoding(loading)
+  }, [loading])
 
   useEffect(() => {
     const loadPosenet = async () => {
@@ -119,6 +124,7 @@ const PoseNetComponent: React.FC<PoseNetComponentProp> = (props: PoseNetComponen
               width: '100%',
               height: '100%',
               borderRadius: 24,
+              transform: 'scaleX(-1);'
             }}
           />
         </div>
