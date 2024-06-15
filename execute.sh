@@ -4,4 +4,5 @@ cd /root/product
 
 npm i
 
-npm run dev
+npm run build
+npm run start
