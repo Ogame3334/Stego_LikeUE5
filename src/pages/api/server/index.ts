@@ -149,7 +149,8 @@ export default (req: NextApiRequest, res: NextApiResponseWithSocket) => {
                 from: 'server',
                 method: 'pose-send',
                 content: {
-                  pose: data.content.pose
+                  pose: data.content.pose,
+                  magicInfo: data.content.magicInfo
                 }
               } as CommunicationFormat))
             }

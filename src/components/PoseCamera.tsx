@@ -3,11 +3,14 @@ import * as posenet from '@tensorflow-models/posenet';
 import '@tensorflow/tfjs';
 import Webcam from 'react-webcam';
 import RoundedButtonOnClick from './RoundedButtonOnClick';
+import PoseBodyInfo from '@/interfaces/PoseBodyInfo';
+import Parts from '@/enums/Parts';
 
 interface PoseNetComponentProp {
   pose: posenet.Pose;
   setPose: Function;
   setNowLoding: Function;
+  poseBodyInfo: PoseBodyInfo;
 }
 
 const PoseNetComponent: React.FC<PoseNetComponentProp> = (props: PoseNetComponentProp) => {
@@ -64,6 +67,15 @@ const PoseNetComponent: React.FC<PoseNetComponentProp> = (props: PoseNetComponen
     getCameras();
   }, []);
 
+  useEffect(() => {
+    if (props.pose && canvasRef.current && webcamRef.current) {
+      const video = webcamRef.current.video;
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
+      drawCanvas(props.pose, video, videoWidth, videoHeight, canvasRef);
+    }
+  }, [props.pose, props.poseBodyInfo]);
+
   const switchCamera = async () => {
     const nextCameraIndex = (selectedCameraIndex + 1) % cameraList.length;
     setSelectedCameraIndex(nextCameraIndex);
@@ -96,6 +108,83 @@ const PoseNetComponent: React.FC<PoseNetComponentProp> = (props: PoseNetComponen
         ctx!.fill();
       }
     });
+    
+    const noseY = props.pose.keypoints[Parts.nose]?.position.y || -1;
+    ctx!.beginPath();
+    ctx!.moveTo(0, noseY);
+    ctx!.lineTo(canvas.current!.width, noseY);
+    ctx!.strokeStyle = 'yellow';
+    ctx!.lineWidth = 2;
+    ctx!.stroke();
+
+    ctx!.beginPath();
+    ctx!.arc(props.poseBodyInfo.bodyCenter.x, props.poseBodyInfo.bodyCenter.y, 5, 0, 2 * Math.PI);
+    ctx!.fillStyle = 'limegreen';
+    ctx!.fill();
+
+    ctx!.beginPath();
+    ctx!.moveTo(0, props.poseBodyInfo.bodyCenter.y);
+    ctx!.lineTo(canvas.current!.width, props.poseBodyInfo.bodyCenter.y);
+    ctx!.strokeStyle = 'limegreen';
+    ctx!.lineWidth = 2;
+    ctx!.stroke();
+
+    ctx!.beginPath();
+    ctx!.moveTo(0, props.poseBodyInfo.shoulderPosY);
+    ctx!.lineTo(canvas.current!.width, props.poseBodyInfo.shoulderPosY);
+    ctx!.strokeStyle = 'yellow';
+    ctx!.lineWidth = 2;
+    ctx!.stroke();
+
+    ctx!.beginPath();
+    ctx!.moveTo(0, props.poseBodyInfo.groundPosY);
+    ctx!.lineTo(canvas.current!.width, props.poseBodyInfo.groundPosY);
+    ctx!.strokeStyle = 'yellow';
+    ctx!.lineWidth = 2;
+    ctx!.stroke();
+    
+    ctx!.beginPath();
+    ctx!.moveTo(0, props.poseBodyInfo.kneePosY);
+    ctx!.lineTo(canvas.current!.width, props.poseBodyInfo.kneePosY);
+    ctx!.strokeStyle = 'yellow';
+    ctx!.lineWidth = 2;
+    ctx!.stroke();
+
+    ctx!.beginPath();
+    ctx!.moveTo(0, props.poseBodyInfo.hipPosY);
+    ctx!.lineTo(canvas.current!.width, props.poseBodyInfo.hipPosY);
+    ctx!.strokeStyle = 'yellow';
+    ctx!.lineWidth = 2;
+    ctx!.stroke();
+
+    ctx!.beginPath();
+    ctx!.moveTo(props.poseBodyInfo.rightShoulderPosX, 0);
+    ctx!.lineTo(props.poseBodyInfo.rightShoulderPosX, canvas.current!.height);
+    ctx!.strokeStyle = 'yellow';
+    ctx!.lineWidth = 2;
+    ctx!.stroke();
+
+    ctx!.beginPath();
+    ctx!.stroke();
+    ctx!.moveTo(props.poseBodyInfo.rightShoulderPosXOffset, 0);
+    ctx!.lineTo(props.poseBodyInfo.rightShoulderPosXOffset, canvas.current!.height);
+    ctx!.strokeStyle = 'blue';
+    ctx!.lineWidth = 2;
+    ctx!.stroke();
+
+    ctx!.beginPath();
+    ctx!.moveTo(props.poseBodyInfo.leftShoulderPosX, 0);
+    ctx!.lineTo(props.poseBodyInfo.leftShoulderPosX, canvas.current!.height);
+    ctx!.strokeStyle = 'yellow';
+    ctx!.lineWidth = 2;
+    ctx!.stroke();
+
+    ctx!.beginPath();
+    ctx!.moveTo(props.poseBodyInfo.leftShoulderPosXOffset, 0);
+    ctx!.lineTo(props.poseBodyInfo.leftShoulderPosXOffset, canvas.current!.height);
+    ctx!.strokeStyle = 'blue';
+    ctx!.lineWidth = 2;
+    ctx!.stroke();
   };
 
   return (

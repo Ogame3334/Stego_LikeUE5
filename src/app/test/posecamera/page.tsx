@@ -15,6 +15,17 @@ export default function Main(){
                 pose={pose}    
                 setPose={setPose}
                 setNowLoding={()=>{}}
+                poseBodyInfo={{
+                    bodyCenter: { x: -1, y: -1 },
+                    groundPosY: -1,
+                    kneePosY: -1,
+                    hipPosY: -1,
+                    rightShoulderPosX: -1,
+                    leftShoulderPosX: -1,
+                    rightShoulderPosXOffset: -1,
+                    leftShoulderPosXOffset: -1,
+                    shoulderPosY: -1
+                  }}
             />
         </>
     )    

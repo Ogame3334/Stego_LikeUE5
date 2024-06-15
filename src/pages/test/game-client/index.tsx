@@ -1,6 +1,7 @@
 'use client'
 
 import CommunicationFormat from '@/interfaces/CommunicationFormat';
+import MagicInfo from '@/interfaces/MagicInfo';
 import { Pose } from '@tensorflow-models/posenet';
 import React, { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
@@ -20,6 +21,7 @@ const Home = () => {
   const [socket, setSocket] = useState<Socket<ServerToClientEvents, ClientToServerEvents> | null>(null);
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('{}');
+  const [magicInfo, setMagicInfo] = useState<MagicInfo>({element: 'none'});
 
   useEffect(() => {
     // APIルートを呼び出してSocket.IOサーバーを初期化
@@ -50,6 +52,7 @@ const Home = () => {
         }
         else if (data.method === 'pose-send') {
           setPose(data.content.pose as Pose);
+          setMagicInfo(data.content.magicInfo as MagicInfo);
         }
         else if (data.method === 'disconnected') {
           setDisconnected(true);
@@ -96,14 +99,14 @@ const Home = () => {
         isConnected ?
           <>
             <div>
-              <div className="h-32" />
-              {pose.keypoints.map((elem, i) => {
+              <p className='text-9xl'>{magicInfo.element}</p>
+              {/* {pose.keypoints.map((elem, i) => {
                 return (
                   <div key={i}>
                     {`${elem.part}: ${Math.round(elem.position.x * 10) / 10}, ${Math.round(elem.position.y * 10) / 10}`}
                   </div>
                 )
-              })}
+              })} */}
             </div>
           </>
           :
