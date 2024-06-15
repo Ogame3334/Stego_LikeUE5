@@ -151,19 +151,7 @@ const Home = () => {
             setMagicInfo({element: 'wind'});
           }
         }
-        // if(rightWrist.position.y < nose.position.y && leftWrist.position.y < nose.position.y){
-        //   setPoseState(PoseState.Ground0HandsUp);
-        // }
-        // else if(rightWrist.position.y > poseBodyInfo.kneePosY && leftWrist.position.y > poseBodyInfo.kneePosY){
-        //   if(poseState === PoseState.Ground0HandsUp){
-        //     setPoseState(PoseState.Ground1HandsDownToGround);
-        //     setMagicInfo({element: 'rock'});
-        //     setPoseState(PoseState.None);
-        //   }
-        // }
       }
-      
-      
     }
   }
 
@@ -314,14 +302,14 @@ const Home = () => {
                 </div>
                 : <></>}
               <div className={`${isLoading ? 'invisible' : ''}`}>
-                <div className="flex">
+                {/* <div className="flex"> */}
                   <PoseNetComponent
                     pose={pose}
                     setPose={setPose}
                     setNowLoding={(setIsLoading)}
                     poseBodyInfo={poseBodyInfo}
                   />
-                  <div>
+                  {/* <div>
                     <div className="h-32" />
                     <p>PoseState: {PoseState[poseState]}</p>
                     <p>magic element: {magicInfo.element}</p>
@@ -337,7 +325,7 @@ const Home = () => {
                     <p>hipPosY: {Math.round(poseBodyInfo.hipPosY * 10) / 10}</p>
                     <p>bodyCenter: ({Math.round(poseBodyInfo.bodyCenter.x * 10) / 10}, {Math.round(poseBodyInfo.bodyCenter.y * 10) / 10})</p>
                   </div>
-                </div>
+                </div> */}
               </div>
             </>
         }
