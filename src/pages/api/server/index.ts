@@ -35,7 +35,7 @@ export default (req: NextApiRequest, res: NextApiResponseWithSocket) => {
     const io = new SocketIOServer(res.socket.server, {
       path: '/api/server',
       cors: {
-        origin: '*', // 必要に応じて特定のオリジンを指定
+        origin: 'https://posa-magica.ogmgre.com', // 必要に応じて特定のオリジンを指定
         methods: ['GET', 'POST'],
         allowedHeaders: [],
         credentials: true
