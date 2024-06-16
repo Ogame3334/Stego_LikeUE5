@@ -34,6 +34,12 @@ export default (req: NextApiRequest, res: NextApiResponseWithSocket) => {
 
     const io = new SocketIOServer(res.socket.server, {
       path: '/api/server',
+      cors: {
+        origin: '*', // 必要に応じて特定のオリジンを指定
+        methods: ['GET', 'POST'],
+        allowedHeaders: ['my-custom-header'],
+        credentials: true
+      }
     });
 
     io.on('connection', (socket) => {
