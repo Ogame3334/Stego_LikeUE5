@@ -37,7 +37,7 @@ export default (req: NextApiRequest, res: NextApiResponseWithSocket) => {
       cors: {
         origin: '*', // 必要に応じて特定のオリジンを指定
         methods: ['GET', 'POST'],
-        allowedHeaders: ['my-custom-header'],
+        allowedHeaders: [],
         credentials: true
       }
     });
@@ -192,6 +192,7 @@ export default (req: NextApiRequest, res: NextApiResponseWithSocket) => {
     });
 
     res.socket.server.io = io;
+    // console.log(res.socket.server.io);
   }
   res.end();
 };
