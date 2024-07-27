@@ -22,6 +22,7 @@ const Home = () => {
   const [message, setMessage] = useState('');
   const [response, setResponse] = useState('{}');
   const [magicInfo, setMagicInfo] = useState<MagicInfo>({element: 'none'});
+  const [bgColor, setBgColor] = useState<'bg-white' | 'bg-red-200' | 'bg-green-200' | 'bg-sky-200'>('bg-white');
 
   useEffect(() => {
     // APIルートを呼び出してSocket.IOサーバーを初期化
@@ -52,7 +53,13 @@ const Home = () => {
         }
         else if (data.method === 'pose-send') {
           setPose(data.content.pose as Pose);
-          setMagicInfo(data.content.magicInfo as MagicInfo);
+          const magicinfo = data.content.magicInfo as MagicInfo;
+          setMagicInfo(magicinfo);
+          setBgColor(magicinfo.element === "none" ? "bg-white" : (magicinfo.element === "rock" ? "bg-green-200" : (magicinfo.element === "wind" ? "bg-green-200" : "bg-red-200")) );
+          setTimeout(()=>{
+            setMagicInfo({element: 'none'});
+            setBgColor(`bg-white`);
+          }, 500);
         }
         else if (data.method === 'disconnected') {
           setDisconnected(true);
@@ -98,7 +105,7 @@ const Home = () => {
         :
         isConnected ?
           <>
-            <div>
+            <div className={bgColor + ' w-full h-full'}>
               <p className='text-9xl'>{magicInfo.element}</p>
               {/* {pose.keypoints.map((elem, i) => {
                 return (
